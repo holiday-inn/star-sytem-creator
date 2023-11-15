@@ -17,29 +17,46 @@ class star():
     gas = None
     plane = None
     lvl = 0
-    
+
+    def forlatersql(self):
+        connection = sqlite3.connect('dbase.db')
+        cursor = connection.cursor()
+        
+        query = f"""insert into stars (name,size,atm,hyd,pop,govt,law,tech,starport,naval,scout,gas,plane) values ('{self.worldname}','{self.size}','{self.atm}','{self.atm}',{self.pop},"{self.govt}",{self.lawlvl},"{self.lvl}","{self.starport}","{self.naval}","{self.scout}","{self.gas}","{self.plane}");"""
+        cursor.execute(query)
+        cursor.connection.commit()
+        query = "select * from stars"
+        cursor.execute(query)
+
+
+        
+
     def __init__(self):
 
+        
         def randname():
-                letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHLMNOPQRSTUVWXZY"
-                name = ''.join(random.choice(letters) for _ in range(random.randint(3,9)))
+                letters = ["bdfghjklmnprstvwyz","aeiouy"]
+                name = ''.join(random.choice(letters[random.randint(0,1)]) for _ in range(random.randint(3,9))).capitalize()
+
                 return name
 
         self.data = open("tables.csv","a")
         self.worldname = randname()
-        print(f"|  Planet Name:{self.worldname:<9}  |")
+        
         self.size = (random.randint(1,6) + random.randint(1,6) - 2)
         self.atm = (random.randint(1,6) + random.randint(1,6) - 7 + self.size)
-        if self.size == 0:self.atmos = 0
+        if self.size == 0:self.atm = 0
+        
         self.hyd = (random.randint(1,6) + random.randint(1,6) - 7 + self.size)
         if self.size < 1: self.hyd = 0
-        if self.atm < 1 or self.atm > 10: pass
-        # if size<1, hydro = 0. if atmos <1
-        #gotta have a bunch of technicalities
+        if self.atm < 1 or self.atm > 10: self.atm -=4
+        if self.hyd < 0: self.hyd = 0
+        if self.atm > 10: self.atm = 10
         self.pop = (random.randint(1,6) + random.randint(1,6) - 2)
         self.govt = (random.randint(1,6) + random.randint(1,6) - 7 + self.pop)
+        if self.govt < 0: self.govt = 0
         self.lawlvl = (random.randint(1,6) + random.randint(1,6) - 7 + self.govt)
-        #need tech level, gotta ask quechuns
+        if self.atm <= 0: self.atm = 0
         
         
         line = open("tables.csv","r").read().split("\n")
@@ -65,7 +82,6 @@ class star():
 
 
             info = json.loads(line[twodie-2+multi])
-            
             return info[varname]
 
         
@@ -85,7 +101,6 @@ class star():
                 tech +=k[i]
                 count+= 1
             return tech
-
         
 
         self.starport = info('starport')
@@ -94,19 +109,22 @@ class star():
         self.gas = info('gas')
         self.plane = info('plane')
         self.lvl = techlvl()
+        if self.lvl < 0: self.lvl
         
-        print(f"|{self.starport},{self.naval},{self.scout},{self.gas},{self.plane:<5} |")
-        print(self.lvl,self.size,self.atm,self.hyd,self.pop,self.govt) 
+        self.forlatersql()
 
-
-    def forlatersql():
-        file = "dbase.db"
-        conn = sqlite3.connect(file)
-        curso = conn.cursor()
-        query = """
+        
+def main():   
+    data = ["Name","Size","Atmosphere","Hydration","Population","Government","Law","Technology","Starport","Naval Base exists","Scout exists","Gas giant exists","Planetoids exist"]   
+    connection = sqlite3.connect('dbase.db')
+    cursor = connection.cursor()
+    cursor.execute('drop table stars')
+    connection.commit()
+    
+    query = """
         create table if not exists stars (
             id integer primary key autoincrement,
-            name tinytext
+            name tinytext,
             size integer,
             atm integer,
             hyd integer,
@@ -119,22 +137,43 @@ class star():
             scout bool,
             gas bool,
             plane bool);"""
-        curso.execute(query)
-        query = query = f"""insert into customers (name,size,atm,hyd,pop,govt,law,tech,starport,naval,scout,gas,plane) values ('{pname}','{species}','{breed}','{rname}',{pnum},"{email}",{balance},"{fdate}");"""
-        
-        
-        
-        
-
-for i in range(20):
+    cursor.execute(query)
     
-    print("┌─────────────────────────┐")
-    if i < 10:
-        print((f"|  Planet number {i+1}:       |"))
-    else:
-        print(f"|  Planet number {i+1}:      |")
-    star()
-    print("│─────────────────────────|")
+
+    for i in range(10):
+        star()
+    
+    connection = sqlite3.connect('dbase.db')
+    cursor = connection.cursor()
+    query = "select * from stars"
+    cursor.execute(query)
+    res = cursor.fetchall()
+    for i in res:
+        print(i)
+    while True:
+        inp = input("what do you want to look for?: ").strip()
+        inp2 = input("Enter value: ").strip()
+        try:
+            query = f"select * from stars where {inp} = '{inp2}'"
+            cursor.execute(query)
+            result = cursor.fetchall()
+            break
+        except:
+            print("invalid input")
+
+    
+    
+    
+    for i in result:
+        for k in data:
+            print(f"'\033[1m'{k}'\033[0m': {i[data.index(k)+1]}")
+        print("\n")
+    
+    
+
+main()
+
+
 
 
 
