@@ -35,8 +35,8 @@ class star():
 
         
         def randname():
-                letters = ["bdfghjklmnprstvwyz","aeiouy"]
-                name = ''.join(random.choice(letters[random.randint(0,1)]) for _ in range(random.randint(3,9))).capitalize()
+                letters = ["bdfghjklmnprstvwyz","aeiou"]
+                name = ''.join(random.choice(letters[random.randint(0,1)]) for _ in range(random.randint(3,8))).capitalize()
 
                 return name
 
@@ -157,16 +157,20 @@ def main():
             query = f"select * from stars where {inp} = '{inp2}'"
             cursor.execute(query)
             result = cursor.fetchall()
+            if len(result) == 0:
+                print("No data with that value")
+                continue
             break
         except:
             print("invalid input")
+            print("Valid inputs: name, size, atm, hyd, pop, govt, law, tech, starport, naval, scout, gas, plane")
 
     
     
     
     for i in result:
         for k in data:
-            print(f"'\033[1m'{k}'\033[0m': {i[data.index(k)+1]}")
+            print(f"\033[1m{k}\033[0m: {i[data.index(k)+1]}")
         print("\n")
     
     
