@@ -118,8 +118,7 @@ def main():
     cursor = connection.cursor()
     if bignum == 0:       
         cursor.execute('drop table stars')
-        connection.commit()
-    else:pass   
+        connection.commit()  
     bignum+=1
     query = """
         create table if not exists stars (
@@ -171,8 +170,8 @@ def main():
                     for k in data:
                         temp = data.index(k)+1
                         if temp%2 == 0:
-                            print(f"\033[1m{k}\033[0m: {i[data.index(k)+1]}")
-                        else: print(f"\033[1m{k:<20}\033[0m: {i[data.index(k)+1]:<20}",end="")
+                            print(f"\033[1m{k}\033[0m: {i[temp]}")
+                        else: print(f"\033[1m{k:<20}\033[0m: {i[temp]:<20}",end="")
                     print("\n")
                 
             except:
